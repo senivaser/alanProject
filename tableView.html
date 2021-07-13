@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <style type = "text/css">
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: black;
+        background-color: white;
+        font-size: 12px;
+
+      }
+
+      code {
+        font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+          monospace;
+      }
+
+      th {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .table {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+
+      .row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 5fr 2fr 1fr 3fr;
+        min-height: 30px;
+        
+      }
+
+      .row:nth-child(1) {
+        position: sticky;
+      }
+
+      .sticky {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+        background-color: #ccc;
+      }
+
+      .main {
+        background-color: #eee;
+      }
+
+      .jcc {
+        justify-content: center;
+      }
+
+      .jccc {
+        justify-content: center;
+        flex-direction: column;
+      }
+
+
+      .cell{
+        flex: 0.5;
+        display: flex;
+        border: 1px solid black;
+        min-width: 0px;
+        min-height: 0px;
+        hyphens: auto;
+        overflow: visible;
+        word-break: break-all;
+        padding-top: auto;
+        padding-bottom: auto;
+        
+      }
+
+      a{
+        hyphens: manual
+      }
+
+      table {
+        border-spacing: 0px;
+      }
+
+  
+
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <table>
+        <tbody  id="table" class="table"></tbody>
+      </table>
+    </div>
+    
+    </div>
+      
+  </body>
+</html>
+
+<script>
+
+
+const getData = async () => {
+  let data
+  await fetch('http://localhost:3000/', {
+    'Content-Type': 'application/json',
+    credentials: 'same-origin'
+  }).then(async res => {data = await res.json()})
+    .catch(err => console.log(err))
+
+  return data
+}
+
+const headers = {
+  announceId: "Объявление",
+  dateTimeTo: "Срок окончания",
+  reqNumber: "Кол-во заявок",
+  lotId: "Номер Лота",
+  lotAddFeature: "Лот Доп Инфо",
+  lotName: "Имя лота",
+  lotSum: "Сумма",
+  lotTechSpec: "Тех.Спецификация"
+}
+
+const createTextCell = (text) => {
+  const divN = document.createElement('td')
+  divN.textContent = text
+  divN.className = 'cell'
+  return divN
+}
+
+const createInnerHTLMCell = (html) => {
+  const divN = document.createElement('td')
+  divN.insertAdjacentHTML('afterbegin', html)
+  divN.className = 'cell'
+  return divN
+}
+
+const createHeaderCell = (header, text) => {
+  const divN = document.createElement('th')
+  const headerN = document.createElement('div')
+  headerN.className = 'cell jcc'
+  headerN.textContent = text
+  const inputDivN = document.createElement('div')
+  inputDivN.className = 'cell jcc jccc'
+  inputDivN.insertAdjacentHTML('beforeend', `
+    <input id="${header}" type="number"  min="0" max="8" value="0">
+    <div><input  id="${header}" type="checkbox"> Убыв.</div>
+  `)
+  divN.append(headerN)
+  divN.append(inputDivN)
+  return divN
+
+
+}
+
+const appendRow = (tableN, vis) => {
+  const rowN = document.createElement('tr')
+  rowN.className = 'row'
+  tableN.append(rowN)
+  if (vis) rowN.classList.toggle('main')
+  return rowN
+}
+
+const appendHeader = (rootN) => {
+  const rowN = document.createElement('tr')
+  rowN.className = 'row sticky'
+  rootN.insertAdjacentElement('afterbegin',rowN)
+  for (let key of Object.keys(headers)) {
+    rowN.append(createHeaderCell(key, headers[key]))
+  } 
+}
+
+const baseAnnounceUrl = "https://www.goszakup.gov.kz/ru/announce/index"
+
+
+const createTable = (data, tableN) => {
+  
+  for (let row of data) {
+    const rowN = appendRow(tableN, row.annInfoIsVisible)
+    const appendCell = (column, value, vis) => {
+        if(column === 'lotTechSpec') {
+          rowN.append(createInnerHTLMCell(value))
+        } else if (column === 'announceId'){
+          rowN.append(createInnerHTLMCell(`<a target="_blank" href='${baseAnnounceUrl}/${value}'>${value}</a>`))
+        } else {
+          rowN.append(createTextCell(value))
+        }
+    }
+
+    Object.keys(headers).map(head => {
+      if (row.annInfoIsVisible){
+        appendCell(head, row[head])
+      } else {
+        const re1 = /^lot/
+        const re2 = /announceId/
+        if (head.match(re1) || head.match(re2)) {
+          appendCell(head, row[head])
+        } else {
+          appendCell(head, '')
+        }
+      }
+    })
+    
+  }
+}
+
+// const sortFunction()
+const getSortOpts = (inputsNL) => {
+  let opts = {}
+  inputsNL.forEach(inputN => {
+    // console.log(inputN.id, inputN.value, inputN.checked)
+    if (!opts[inputN.id]) opts[inputN.id] = {id: inputN.id}
+    if (inputN.type === "number") opts[inputN.id].value = inputN.value
+    if (inputN.type === "checkbox") opts[inputN.id].checked = inputN.checked
+  });
+  return Object.values(opts)
+}
+
+const multipleSortData = (inputsNL, data) => {
+  const opts = getSortOpts(inputsNL)
+  console.log(opts)
+  const properOpts = opts
+    .filter(opt => +opt.value !== 0)
+    .sort((opt1, opt2) => +opt2.value - +opt1.value)
+  const sortedData = data.sort((row1, row2) => {
+    let result = 0
+    properOpts.forEach(opt => {      
+      const a = row1[opt.id]
+      const b = row2[opt.id]
+      if (a !== b) {
+        if (opt.checked) {
+          result = b - a
+        } else {
+          result = a - b
+        }
+      }
+    })
+    return result
+  })
+  return sortedData
+}
+
+window.onload = async () => {
+  const rootN = document.getElementById('root')
+  const tableN = document.getElementById('table')
+  appendHeader(rootN)
+  const data = await getData()
+  createTable(data, tableN)
+
+  const inputsNL = document.querySelectorAll('input');
+  inputsNL.forEach(inputN => {
+    inputN.addEventListener('input', () => {
+      console.log('qq')
+      const newData = multipleSortData(inputsNL, data)
+      tableN.textContent = ""
+      createTable(newData, tableN)
+    })
+  })
+}
+ 
+
+</script>
