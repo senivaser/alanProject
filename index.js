@@ -8,7 +8,7 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 const env = require('./constants')
 
 const { getAnnouncesList, getAnnounceData } = require('./stages');
-const { output, clearJSONData, getTimeDifferenseHMS, deleteFile, getFilesizeInBytes } = require('./utils');
+const { output, clearJSONData, getTimeDifferenseHMS, deleteFile, getFilesizeInBytes, readJSONFromFile } = require('./utils');
 const { timeout } = require('./utils/timeout');
 
 const main = async () => {
@@ -27,7 +27,7 @@ const main = async () => {
     }
     await output('./data/announces.json', JSON.stringify(annList))
 
-    const announces = require('./data/announces.json')
+    const announces = JSON.parse(await readJSONFromFile('./data/announces.json') )
     // console.log(announces)
 
     let searchData = {}

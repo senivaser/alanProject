@@ -28,6 +28,7 @@ module.exports.getDocument = async (res, output = false) => {
       throw "captcha error"
     }
     // console.log(res.response)
+    // await this.output('./response.json', JSON.stringify(res.response.data))
     const page = res.response.data
     if (output) {
       this.output('./output.html', page)
@@ -71,6 +72,12 @@ module.exports.getAllFilenames = async (folder) => {
     return files
   });
   
+}
+
+module.exports.readJSONFromFile = async (path) => {
+  return fs.readFileSync(path, 'utf8', async function (err, data) {
+    return JSON.parse(data);
+  });
 }
 
 module.exports.deleteFile = async (path) => {

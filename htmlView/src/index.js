@@ -2,13 +2,13 @@ const fs = require('fs');
 const { getAllFilenames } = require('../utils');
 const env = require('../../constants')
 
-module.exports.filenames = async () => await getAllFilenames(`../data/searchData`)
+module.exports.filenames = async () => await getAllFilenames(`./data/searchData`)
 
 module.exports.getNumber = (x) => +x.split('.')[0] 
 
 module.exports.fileProcessData = async (fileName) => {
   const rawData = require(`../../data/searchData/${fileName}`)
-  console.log(rawData)
+  // console.log(rawData)
   let tableData = []
   for (let announceId in rawData) {
     const headerData = {

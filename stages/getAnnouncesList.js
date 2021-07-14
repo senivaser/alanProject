@@ -46,6 +46,7 @@ module.exports.getAnnouncesList = async (page) => {
       let announceId = ref.href.split(env.ANNOUNCE_URL)[1]
       let method = annMethods[i].textContent
       announces.push({[announceId]: method})
+      i+=1
     }
   } else {
     return null

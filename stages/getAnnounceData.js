@@ -13,7 +13,7 @@ module.exports.getAnnounceData = async (announceId, announceMethod) => {
   config.params = {
     tab: 'lots'
   }
-
+  // console.log(config.url )
   const delay = randomMathDelay(env.CD_DATA)
   const res = await query(config, delay)
 

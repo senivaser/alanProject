@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<!-- saved from url=(0079)file:///home/senivaser/Desktop/work/js_projects/Alan/alanProject/tableView.html -->
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <style type = "text/css">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="file:///home/senivaser/Desktop/work/js_projects/Alan/alanProject/%PUBLIC_URL%/logo192.png">
+        <style type="text/css">
       body {
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -37,17 +38,28 @@
         justify-content: center;
       }
 
+      .empty-row {
+        width: 100%;
+        min-height: 30px;
+      }
 
       .row {
         width: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 5fr 2fr 1fr 3fr;
-        min-height: 30px;
-        
+        min-height: 30px;        
       }
 
-      .row:nth-child(1) {
-        position: sticky;
+      .sort-h{
+        height: 30px!important;
+      }
+
+      .uh{
+        min-height: 50px!important;
+      }
+
+      .t-30{
+        top: 30px!important;
       }
 
       .sticky {
@@ -60,6 +72,10 @@
 
       .main {
         background-color: #eee;
+      }
+
+      .df {
+        display: flex;
       }
 
       .jcc {
@@ -92,25 +108,17 @@
 
       table {
         border-spacing: 0px;
+        margin-top: 100px;
       }
-
-  
-
-    </style>
-  </head>
-  <body>
-    <div id="root">
-      <table>
-        <tbody  id="table" class="table"></tbody>
-      </table>
-    </div>
-    
-    </div>
-      
-  </body>
-</html>
-
-<script>
+        </style>
+    </head>
+    <body>
+      <div id = root>
+        <table>
+          <tbody id = "table" class="table"></tbody>
+        </table>
+      </div>
+    <script>
 
 
 const getData = async () => {
@@ -176,12 +184,20 @@ const appendRow = (tableN, vis) => {
 }
 
 const appendHeader = (rootN) => {
+  const buttonRowN = document.createElement('div')
+  buttonRowN.className = 'empty-row sticky df jcc sort-h'
+  buttonRowN.insertAdjacentHTML('afterbegin', `
+    <button id="sort">Сортировать</button>
+  `)
   const rowN = document.createElement('tr')
-  rowN.className = 'row sticky'
-  rootN.insertAdjacentElement('afterbegin',rowN)
+  rowN.className = 'row sticky uh t-30'
   for (let key of Object.keys(headers)) {
     rowN.append(createHeaderCell(key, headers[key]))
   } 
+
+  rootN.insertAdjacentElement('afterbegin',buttonRowN)
+  rootN.insertAdjacentElement('afterbegin',rowN)
+  
 }
 
 const baseAnnounceUrl = "https://www.goszakup.gov.kz/ru/announce/index"
@@ -262,15 +278,24 @@ window.onload = async () => {
   createTable(data, tableN)
 
   const inputsNL = document.querySelectorAll('input');
-  inputsNL.forEach(inputN => {
-    inputN.addEventListener('input', () => {
-      console.log('qq')
-      const newData = multipleSortData(inputsNL, data)
-      tableN.textContent = ""
-      createTable(newData, tableN)
-    })
-  })
-}
- 
+  const sortButtonN = document.querySelector('#sort')
 
-</script>
+  sortButtonN.addEventListener('click', () => {
+    const newData = multipleSortData(inputsNL, data)
+    tableN.textContent = ""
+    // console.log(data, newData)
+    createTable(newData, tableN)
+  })
+  // inputsNL.forEach(inputN => {
+  //   inputN.addEventListener('input', () => {
+  //     console.log('qq')
+  //     const newData = multipleSortData(inputsNL, data)
+  //     tableN.textContent = ""
+  //     // console.log(data, newData)
+  //     createTable(newData, tableN)
+  //   })
+  // })
+}
+        </script>
+    </body>
+</html>

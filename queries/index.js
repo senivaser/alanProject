@@ -24,8 +24,8 @@ const env = require('../constants')
 module.exports.getAnnouncesList = {
   rejectUnauthorized: false,
   method: 'GET',
-  baseURL: 'http://www.goszakup.gov.kz',
-  url: env.ANNOUNCE_SEARCH_URL,
+  baseURL: '',
+  url: 'http://www.goszakup.gov.kz' + env.ANNOUNCE_SEARCH_URL,
   headers
 }
 
