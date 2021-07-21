@@ -3,6 +3,7 @@ const jsdom = require('jsdom')
 const fs = require('fs');
 const { execSync } = require("child_process");
 const { timeout } = require('./timeout');
+const env = require('../constants')
 
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
@@ -25,7 +26,9 @@ module.exports.getDocument = async (res, output = false) => {
   try{
     // console.log(res.response.request.path, res.delay)
     if (res.response && res.response.request.path === '/ru/captcha') {
-      throw "captcha error"
+      console.log(`captcha ${env.CD_CAPTCHA}`)
+      await timeout(env.CD_CAPTCHA)
+      return this.getDocument(res, output)
     }
     // console.log(res.response)
     // await this.output('./response.json', JSON.stringify(res.response.data))

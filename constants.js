@@ -12,6 +12,7 @@ module.exports = {
   CD_LIST: +process.env.CD_LIST,
   CD_DATA: +process.env.CD_DATA,
   CD_TECHSPEC: +process.env.CD_TECHSPEC,
+  CD_CAPTCHA: +process.env.CD_CAPTCHA,
   METHODS: {
     'Запрос ценовых предложений': process.env.METHOD_ZCP,
     'Открытый конкурс': process.env.METHOD_OK,
