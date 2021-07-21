@@ -25,12 +25,15 @@ module.exports.htmlParse = async (data) => {
 module.exports.getDocument = async (res, output = false) => {
   try{
     // console.log(res.response.request.path, res.delay)
-    if (res.response && res.response.request.path === '/ru/captcha') {
-      console.log(`captcha ${env.CD_CAPTCHA}`)
-      await timeout(env.CD_CAPTCHA)
-      return this.getDocument(res, output)
-    }
     // console.log(res.response)
+
+    // if (res.response && res.response.request.path === '/ru/captcha') {
+    //   console.log(`captcha ${env.CD_CAPTCHA}`)
+    //   await timeout(env.CD_CAPTCHA)
+    //   return this.getDocument(res, output)
+   
+    // }
+     
     // await this.output('./response.json', JSON.stringify(res.response.data))
     const page = res.response.data
     if (output) {
