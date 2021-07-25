@@ -12,7 +12,7 @@ const { output, clearJSONData, getTimeDifferenseHMS, deleteFile, getFilesizeInBy
 const { timeout } = require('./utils/timeout');
 
 const main = async () => {
-  await deleteFile('./data/qq.txt')
+  await output('./data/qq.txt', '')
   let annList = 'start'
   let page = 0
   let annNum = 0

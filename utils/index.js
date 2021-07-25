@@ -86,6 +86,7 @@ module.exports.readJSONFromFile = async (path) => {
   });
 }
 
+
 module.exports.deleteFile = async (path) => {
   try {
     return fs.unlinkSync(path, err => {
