@@ -10,6 +10,8 @@ module.exports.getAnnouncesList = async (page) => {
     config.params = {
       'filter[end_date_from]': env.DATE_END_FROM,
       'filter[end_date_to]': env.DATE_END_TO,
+      'filter[amount_from]': env.SUM_FROM,
+      'filter[amount_to]': env.SUM_TO,
       'filter[status]': ['210', '220', '240'],
       'filter[method]': ['3', '2', '7', '126','129'],
       'filter[trade_type]': 'g',

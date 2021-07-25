@@ -1,6 +1,8 @@
 module.exports = {
   DATE_END_FROM: process.env.DATE_END_FROM,
   DATE_END_TO: process.env.DATE_END_TO,
+  SUM_FROM: process.env.SUM_FROM,
+  SUM_TO: process.env.SUM_TO,
   COUNT_RECORD: process.env.COUNT_RECORD,
   ANNOUNCE_ID_HEADER: process.env.ANNOUNCE_ID_HEADER,
   METHOD_HEADER: process.env.METHOD_HEADER,
