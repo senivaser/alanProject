@@ -8,10 +8,10 @@ const env = require('../constants')
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 module.exports.query = async (config, delay = 0) => {
-  const base = process.env.PWD
+
   let response
   await timeout(delay)
-  await this.appendToOutput(`${base}/data/qq`, 'q')
+  await this.appendToOutput(`./data/qq`, 'q')
   await axios(config)  
     .then( (res) => {response = {err:false, response:res, delay: delay}})
     .catch( (err) => {response = {err:true, message: err.message, code: err.code, response: (err.response) ? err.response: err, errBody: err, delay: delay}})    
