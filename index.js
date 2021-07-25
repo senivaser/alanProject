@@ -12,7 +12,7 @@ const { output, clearJSONData, getTimeDifferenseHMS, deleteFile, getFilesizeInBy
 const { timeout } = require('./utils/timeout');
 
 const main = async () => {
-  await output('./data/qq.txt', '')
+  await output('./data/qq', '')
   let annList = 'start'
   let page = 0
   let annNum = 0
@@ -45,7 +45,7 @@ const main = async () => {
       searchData[announceId] = {[env.METHOD_HEADER]:announce[announceId], ...await getAnnounceData(announceId, announce[announceId])}
       let dateNow = new Date().getTime()
       
-      console.log(announceId, '|  ', annNum, '|| ', await getFilesizeInBytes('./data/qq.txt'), '|  ', getTimeDifferenseHMS(dateStart, dateNow))
+      console.log(announceId, '|  ', annNum, '|| ', await getFilesizeInBytes('./data/qq'), '|  ', getTimeDifferenseHMS(dateStart, dateNow))
     }
     await output(`./data/searchData/${page}.json`, JSON.stringify(searchData))
     
