@@ -4,6 +4,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="normalize.css">
         <link rel="apple-touch-icon" href="file:///home/senivaser/Desktop/work/js_projects/Alan/alanProject/%PUBLIC_URL%/logo192.png">
         <style type="text/css">
       body {
@@ -19,6 +20,9 @@
 
       }
 
+      input {
+        width: 100%;
+      }
       code {
         font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
           monospace;
@@ -29,6 +33,11 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+      }
+      
+      th > * {
+        padding-top: 10px;
+        padding-bottom: 10px;
       }
 
       .table {
@@ -102,23 +111,35 @@
         
       }
 
+      .f-25 {
+        flex: 0.25;
+      }
+
+      .f-50 {
+        flex: 0.5;
+      }
+
+      .f-75 {
+        flex: 0.75;
+      }
+
       a{
         hyphens: manual
       }
 
       table {
         border-spacing: 0px;
-        margin-top: 100px;
+        margin-top: 177px;
       }
         </style>
     </head>
     <body>
-      <div id = root>
-        <table>
-          <tbody id = "table" class="table"></tbody>
-        </table>
-      </div>
-    <script>
+        <div id="root">
+            <table>
+                <tbody id="table" class="table"></tbody>
+            </table>
+        </div>
+        <script>
 
 
 const getData = async () => {
@@ -160,13 +181,16 @@ const createInnerHTLMCell = (html) => {
 const createHeaderCell = (header, text) => {
   const divN = document.createElement('th')
   const headerN = document.createElement('div')
-  headerN.className = 'cell jcc'
-  headerN.textContent = text
+  headerN.className = 'cell jcc f-25'
+  headerN.insertAdjacentHTML('beforeend', `
+      <div>${text}</div>
+  `)
   const inputDivN = document.createElement('div')
-  inputDivN.className = 'cell jcc jccc'
-  inputDivN.insertAdjacentHTML('beforeend', `
-    <input id="${header}" type="number"  min="0" max="8" value="0">
-    <div><input  id="${header}" type="checkbox"> Убыв.</div>
+  inputDivN.className = 'cell jcc jccc f-75'
+  inputDivN.insertAdjacentHTML('beforeend', `   
+    <div class='cell jcc'><div class='f-50'>Тэги</div><input id="search-${header}" class="search f-50" type="text"></div>   
+    <div class='cell jcc'><div class='f-50'>Приоритет</div><input id="${header}" class="priority f-50" type="number"  min="0" max="8" value="0"></div>
+    <div><input  id="${header}" class="priority" type="checkbox"> Убыв.</div>
   `)
   divN.append(headerN)
   divN.append(inputDivN)
@@ -208,7 +232,7 @@ const createTable = (data, tableN) => {
   for (let row of data) {
     const rowN = appendRow(tableN, row.annInfoIsVisible)
     const appendCell = (column, value, vis) => {
-        if(column === 'lotTechSpec') {
+        if (column === 'lotTechSpec') {
           rowN.append(createInnerHTLMCell(value))
         } else if (column === 'announceId'){
           rowN.append(createInnerHTLMCell(`<a target="_blank" href='${baseAnnounceUrl}/${value}'>${value}</a>`))
@@ -234,11 +258,9 @@ const createTable = (data, tableN) => {
   }
 }
 
-// const sortFunction()
 const getSortOpts = (inputsNL) => {
   let opts = {}
   inputsNL.forEach(inputN => {
-    // console.log(inputN.id, inputN.value, inputN.checked)
     if (!opts[inputN.id]) opts[inputN.id] = {id: inputN.id}
     if (inputN.type === "number") opts[inputN.id].value = inputN.value
     if (inputN.type === "checkbox") opts[inputN.id].checked = inputN.checked
@@ -276,6 +298,39 @@ const multipleSortData = (inputsNL, data) => {
   return sortedData
 }
 
+const searchData = (searchOpts, data) => {
+  const filteredData = []
+  data.forEach((row) => {
+    Object.keys(searchOpts).forEach((header) => {
+      let isFound = false
+      const ss = searchOpts[header]
+      const keyWords = ss.split(' ').filter(word => word !== '');
+      keyWords.forEach((word) => {
+        console.log({word, value: row[header]})
+        if (row[header].match(new RegExp(`${word}`))) {
+          isFound = true
+        }
+      })    
+      if (isFound) {
+        filteredData.push(row)
+      } 
+    })
+  }) 
+  return filteredData
+}
+
+const filterData = (searchInputNL, data) => {
+  const searchOpts = {};
+  searchInputNL.forEach((inputN) => {
+    console.log(inputN)
+    if (inputN.value?.length) {
+      searchOpts[inputN.id.split('-')[1]] = inputN.value
+    }
+  })
+  console.log({searchOpts})
+  return (Object.keys(searchOpts).length) ? searchData(searchOpts, data): data
+}
+
 window.onload = async () => {
   const rootN = document.getElementById('root')
   const tableN = document.getElementById('table')
@@ -284,24 +339,17 @@ window.onload = async () => {
   console.log(data)
   createTable(data, tableN)
 
-  const inputsNL = document.querySelectorAll('input');
-  const sortButtonN = document.querySelector('#sort')
+  const inputsNL = document.querySelectorAll('.priority');
+  const sortButtonN = document.querySelector('#sort');
+  const searchInputNL = document.querySelectorAll('.search')
+  console.log(searchInputNL)
 
   sortButtonN.addEventListener('click', () => {
     const newData = multipleSortData(inputsNL, data)
+    const filteredData = filterData(searchInputNL, newData)
     tableN.textContent = ""
-    // console.log(data, newData)
-    createTable(newData, tableN)
+    createTable(filteredData, tableN)
   })
-  // inputsNL.forEach(inputN => {
-  //   inputN.addEventListener('input', () => {
-  //     console.log('qq')
-  //     const newData = multipleSortData(inputsNL, data)
-  //     tableN.textContent = ""
-  //     // console.log(data, newData)
-  //     createTable(newData, tableN)
-  //   })
-  // })
 }
         </script>
     </body>
