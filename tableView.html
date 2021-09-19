@@ -189,7 +189,7 @@ const createHeaderCell = (header, text) => {
   inputDivN.className = 'cell jcc jccc f-75'
   inputDivN.insertAdjacentHTML('beforeend', `   
     <div class='cell jcc'><div class='f-50'>Тэги</div><input id="search-${header}" class="search f-50" type="text"></div>   
-    <div class='cell jcc'><div class='f-50'>Приоритет</div><input id="${header}" class="priority f-50" type="number"  min="0" max="8" value="0"></div>
+    <div class='cell jcc'><div class='f-50'>Приоритет</div><input id="priority-${header}" class="priority f-50" type="number"  min="0" max="8" value="0"></div>
     <div><input  id="${header}" class="priority" type="checkbox"> Убыв.</div>
   `)
   divN.append(headerN)
@@ -261,7 +261,7 @@ const createTable = (data, tableN) => {
 const getSortOpts = (inputsNL) => {
   let opts = {}
   inputsNL.forEach(inputN => {
-    if (!opts[inputN.id]) opts[inputN.id] = {id: inputN.id}
+    if (!opts[inputN.id]) opts[inputN.id] = {id: inputN.id.split('-')[1]}
     if (inputN.type === "number") opts[inputN.id].value = inputN.value
     if (inputN.type === "checkbox") opts[inputN.id].checked = inputN.checked
   });
@@ -270,7 +270,7 @@ const getSortOpts = (inputsNL) => {
 
 const multipleSortData = (inputsNL, data) => {
   const opts = getSortOpts(inputsNL)
-  console.log(opts)
+  // console.log(opts)
   const properOpts = opts
     .filter(opt => +opt.value !== 0)
     .sort((opt1, opt2) => +opt2.value - +opt1.value)
@@ -306,8 +306,7 @@ const searchData = (searchOpts, data) => {
       const ss = searchOpts[header]
       const keyWords = ss.split(' ').filter(word => word !== '');
       keyWords.forEach((word) => {
-        console.log({word, value: row[header]})
-        if (row[header].match(new RegExp(`${word}`))) {
+        if (row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
           isFound = true
         }
       })    
@@ -322,13 +321,27 @@ const searchData = (searchOpts, data) => {
 const filterData = (searchInputNL, data) => {
   const searchOpts = {};
   searchInputNL.forEach((inputN) => {
-    console.log(inputN)
+    // console.log(inputN)
     if (inputN.value?.length) {
       searchOpts[inputN.id.split('-')[1]] = inputN.value
     }
   })
-  console.log({searchOpts})
+  // console.log({searchOpts})
   return (Object.keys(searchOpts).length) ? searchData(searchOpts, data): data
+}
+
+const setLocalStorage = (inputNL, searchInputNL) => {
+  [...inputNL, ...searchInputNL].forEach((node) => {
+    if (node.id && node.value) {
+      localStorage.setItem(node.id, node.value);
+    }
+  })
+}
+
+const getLocalStorage = (inputNL, searchInputNL) => {
+  [...inputNL, ...searchInputNL].forEach((node) => {
+    node.value = localStorage.getItem(node.id)
+  })
 }
 
 window.onload = async () => {
@@ -336,19 +349,32 @@ window.onload = async () => {
   const tableN = document.getElementById('table')
   appendHeader(rootN)
   const data = await getData()
-  console.log(data)
   createTable(data, tableN)
 
   const inputsNL = document.querySelectorAll('.priority');
-  const sortButtonN = document.querySelector('#sort');
-  const searchInputNL = document.querySelectorAll('.search')
-  console.log(searchInputNL)
+  const searchInputNL = document.querySelectorAll('.search');
 
-  sortButtonN.addEventListener('click', () => {
+  const sortButtonN = document.querySelector('#sort');
+
+  const sortSequense = () => {
     const newData = multipleSortData(inputsNL, data)
     const filteredData = filterData(searchInputNL, newData)
     tableN.textContent = ""
-    createTable(filteredData, tableN)
+    createTable(filteredData, tableN);
+    setLocalStorage(inputsNL, searchInputNL);
+  } 
+  
+  getLocalStorage(inputsNL, searchInputNL);
+  sortSequense();
+
+  sortButtonN.addEventListener('click', () => {
+    sortSequense();
+  })
+
+  document.addEventListener('keypress', (event) => {    
+    if (event.key === 'Enter') {
+      sortSequense();
+    }
   })
 }
         </script>
