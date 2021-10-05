@@ -306,7 +306,7 @@ const searchData = (searchOpts, data) => {
       const ss = searchOpts[header]
       const keyWords = ss.split(' ').filter(word => word !== '');
       keyWords.forEach((word) => {
-        if (row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
+        if (row[header] && row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
           isFound = true
         }
       })    

@@ -23,12 +23,13 @@ module.exports.getAnnouncesList = async (page) => {
 
     const headers = document.querySelectorAll('#search-result > thead > tr > th')
     const headerData = {}
+
     for (num of Object.keys(headers)) {
       headerData[num] = headers[num].textContent.trim() 
     }
+
     const refTab = +Object.keys(headerData).find(key => headerData[key] === env.ANNOUNCE_ID_HEADER);
     const methodTab = +Object.keys(headerData).find(key => headerData[key] === env.METHOD_HEADER);
-
 
     const annRefs = document.querySelectorAll(`#search-result > tbody > tr > td:nth-child(${refTab+1}) > a`)
     const annMethods = document.querySelectorAll(`#search-result > tbody > tr > td:nth-child(${methodTab+1})`)
