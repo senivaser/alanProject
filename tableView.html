@@ -319,15 +319,19 @@ const searchData = (searchOpts, data) => {
         }
       } else {
         keyWords.forEach((word) => {
-          // if (header === "reqNumber") {
-          //   console.log({header: row[header].toString(), keyword: word.toLowerCase()})
-          // }
-          if (
-            (row[header] || row[header] === '0' || row[header] === 0) 
-            && row[header].toString().toLowerCase().match(new RegExp(`${word.toLowerCase()}`))
-            ) {
-            isFound = true
+          if (header === "reqNumber") {
+            if (+word === +row[header]) {
+              isFound = true
+            }
+          } else {
+            if (
+              (row[header] || row[header] === '0' || row[header] === 0) 
+              && row[header].toString().toLowerCase().match(new RegExp(`${word.toLowerCase()}`))
+              ) {
+              isFound = true
+            }
           }
+         
         }) 
       }          
       if (isFound) {
