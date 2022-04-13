@@ -307,20 +307,26 @@ const searchData = (searchOpts, data) => {
       const keyWords = ss.split(' ').filter(word => word !== '');
       if (header === "lotSum") {
         let max
-        const min = +keyWords[0];
+        const min = keyWords[0];
         if (keyWords[1]) {          
-          max = +keyWords[1];
+          max = keyWords[1];
         } else {
           max = Number.POSITIVE_INFINITY
         }
-        const number = +row[header];
-        if ((min <= number) && (number <= max)) {
+        const number = row[header];
+        if ((+min <= +number) && (+number <= +max)) {
           isFound = true
         }
       } else {
         keyWords.forEach((word) => {
-          if (row[header] && row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
-          isFound = true
+          // if (header === "reqNumber") {
+          //   console.log({header: row[header].toString(), keyword: word.toLowerCase()})
+          // }
+          if (
+            (row[header] || row[header] === '0' || row[header] === 0) 
+            && row[header].toString().toLowerCase().match(new RegExp(`${word.toLowerCase()}`))
+            ) {
+            isFound = true
           }
         }) 
       }          
