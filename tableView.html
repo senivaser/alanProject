@@ -305,11 +305,25 @@ const searchData = (searchOpts, data) => {
       let isFound = false
       const ss = searchOpts[header]
       const keyWords = ss.split(' ').filter(word => word !== '');
-      keyWords.forEach((word) => {
-        if (row[header] && row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
+      if (header === "lotSum") {
+        let max
+        const min = +keyWords[0];
+        if (keyWords[1]) {          
+          max = +keyWords[1];
+        } else {
+          max = Number.POSITIVE_INFINITY
+        }
+        const number = +row[header];
+        if ((min <= number) && (number <= max)) {
           isFound = true
         }
-      })    
+      } else {
+        keyWords.forEach((word) => {
+          if (row[header] && row[header].toLowerCase().match(new RegExp(`${word.toLowerCase()}`))) {
+          isFound = true
+          }
+        }) 
+      }          
       if (isFound) {
         filteredData.push(row)
       } 
@@ -326,7 +340,7 @@ const filterData = (searchInputNL, data) => {
       searchOpts[inputN.id.split('-')[1]] = inputN.value
     }
   })
-  // console.log({searchOpts})
+  console.log({searchOpts})
   return (Object.keys(searchOpts).length) ? searchData(searchOpts, data): data
 }
 
