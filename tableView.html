@@ -301,43 +301,61 @@ const multipleSortData = (inputsNL, data) => {
 const searchData = (searchOpts, data) => {
   const filteredData = []
   data.forEach((row) => {
-    Object.keys(searchOpts).forEach((header) => {
-      let isFound = false
-      const ss = searchOpts[header]
-      const keyWords = ss.split(' ').filter(word => word !== '');
-      if (header === "lotSum") {
-        let max
-        const min = keyWords[0];
-        if (keyWords[1]) {          
-          max = keyWords[1];
-        } else {
-          max = Number.POSITIVE_INFINITY
-        }
-        const number = row[header];
-        if ((+min <= +number) && (+number <= +max)) {
-          isFound = true
-        }
-      } else {
-        keyWords.forEach((word) => {
-          if (header === "reqNumber") {
-            if (+word === +row[header]) {
-              isFound = true
-            }
-          } else {
-            if (
-              (row[header] || row[header] === '0' || row[header] === 0) 
-              && row[header].toString().toLowerCase().match(new RegExp(`${word.toLowerCase()}`))
-              ) {
-              isFound = true
-            }
-          }
-         
-        }) 
-      }          
-      if (isFound) {
-        filteredData.push(row)
-      } 
+    const assignedOpts = {...searchOpts};
+    const tagslotAddFeature = searchOpts.lotAddFeature ?? '';
+    const tagslotName = searchOpts.lotName ?? '';
+    const assignedTags = tagslotAddFeature + tagslotName;
+    assignedOpts.lotName = assignedTags;
+    assignedOpts.lotAddFeature = assignedTags;
+    const display = {};
+    Object.keys(headers).forEach((baseHeader) => {
+        display[baseHeader] = true
     })
+    Object.keys(assignedOpts).forEach((header) => {
+      let isFound = false
+      const ss = assignedOpts[header]
+      const keyWords = ss.split(' ').filter(word => word !== '');
+      if (ss !== '') {
+        if (header === "lotSum") {
+          let max
+          const min = keyWords[0];
+          max = keyWords[1] ?? Number.POSITIVE_INFINITY
+          const number = row[header];
+          if (!((+min <= +number) && (+number <= +max))) {
+            display[header] = false
+          }
+        } else {
+          keyWords.forEach((word) => {
+            if (header === "reqNumber") {
+              if (+word !== +row[header]) {
+                display[header] = false
+              }
+            } else  {
+              if (
+                !(
+                  (row[header] || row[header] === '0' || row[header] === 0) 
+                  && row[header].toString().toLowerCase().match(new RegExp(`${word.toLowerCase()}`))
+                )
+                ) {
+                  if (header)
+                display[header] = false
+              }
+            }         
+          }) 
+        }
+      }      
+    })
+    if (
+        display.announceId
+        && display.dateTimeTo
+        && display.reqNumber
+        && display.lotId
+        && display.lotSum
+        && display.lotTechSpec
+        && (display.lotName || display.lotAddFeature)
+      ) {        
+        filteredData.push(row)
+    } 
   }) 
   return filteredData
 }
