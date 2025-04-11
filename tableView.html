@@ -242,17 +242,7 @@ const createTable = (data, tableN) => {
     }
 
     Object.keys(headers).map(head => {
-      if (row.annInfoIsVisible){
-        appendCell(head, row[head])
-      } else {
-        const re1 = /^lot/
-        const re2 = /announceId/
-        if (head.match(re1) || head.match(re2)) {
-          appendCell(head, row[head])
-        } else {
-          appendCell(head, '')
-        }
-      }
+      appendCell(head, row[head])
     })
     
   }
